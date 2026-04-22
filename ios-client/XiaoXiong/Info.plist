@@ -4,7 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.uuvpn.appleaman.update_profiles</string>
+		<string>com.shaoqiangwu.uuvpn.appleaman.update_profiles</string>
 	</array>
 	<key>CFBundleDocumentTypes</key>
 	<array>
@@ -19,7 +19,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.uuvpn.appleaman.profile</string>
+				<string>com.shaoqiangwu.uuvpn.appleaman.profile</string>
 			</array>
 		</dict>
 	</array>
@@ -61,7 +61,7 @@
 	<string>This app needs access to clipboard to import VPN configuration profiles and share connection settings.</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
-		<key>iCloud.com.uuvpn.appleaman</key>
+		<key>iCloud.com.shaoqiangwu.uuvpn.appleaman</key>
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
@@ -89,7 +89,7 @@
 			<key>UTTypeIconFiles</key>
 			<array/>
 			<key>UTTypeIdentifier</key>
-			<string>com.uuvpn.appleaman.profile</string>
+			<string>com.shaoqiangwu.uuvpn.appleaman.profile</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -115,7 +115,7 @@
 				<string>AppIcon.icns</string>
 			</array>
 			<key>UTTypeIdentifier</key>
-			<string>com.uuvpn.appleaman.profile</string>
+			<string>com.shaoqiangwu.uuvpn.appleaman.profile</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

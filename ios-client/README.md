@@ -142,7 +142,7 @@ The Bundle Identifier (BID) is crucial for app identification and API authentica
 
 Based on the [`Info.plist`](XiaoXiong/Info.plist:7) analysis, the current BID pattern is:
 ```
-com.uuvpn.appleaman
+com.shaoqiangwu.uuvpn.appleaman
 ```
 
 ### Modifying Bundle Identifier
@@ -163,7 +163,7 @@ Search and replace all BID references in configuration files:
 
 ```bash
 # Search for current BID references
-grep -r "com.uuvpn.appleaman" .
+grep -r "com.shaoqiangwu.uuvpn.appleaman" .
 
 # Update the following files:
 # - XiaoXiong/Info.plist

@@ -142,7 +142,7 @@ Bundle Identifier (BID) 对于应用程序识别和 API 身份验证至关重要
 
 基于 [`Info.plist`](XiaoXiong/Info.plist:7) 分析，当前 BID 模式为：
 ```
-com.uuvpn.appleaman
+com.shaoqiangwu.uuvpn.appleaman
 ```
 
 ### 修改 Bundle Identifier
@@ -163,7 +163,7 @@ com.uuvpn.appleaman
 
 ```bash
 # 搜索当前 BID 引用
-grep -r "com.uuvpn.appleaman" .
+grep -r "com.shaoqiangwu.uuvpn.appleaman" .
 
 # 更新以下文件：
 # - XiaoXiong/Info.plist
