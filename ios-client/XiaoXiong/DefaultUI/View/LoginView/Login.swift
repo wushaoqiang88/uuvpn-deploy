@@ -9,8 +9,8 @@ import SwiftUI
  
 import Crisp
 
-// MARK: - Errors
-struct Errors: Codable {
+// MARK: - Error Response
+struct ErrorResponse: Codable {
     let email: [String]?
 }
 
@@ -19,7 +19,14 @@ struct LoginResponseSuccess: Codable {
     let data: LoginResponseSuccessClass?
     let message: String?
     let status: String?
-    let errors: Errors?
+    let error: ErrorResponse?
+    
+    enum CodingKeys: String, CodingKey {
+        case data
+        case message
+        case status
+        case error
+    }
 }
 
 // MARK: - DataClass
@@ -627,12 +634,13 @@ struct Login: View {
                 if let jsonResponse = try? JSONDecoder().decode(LoginResponseSuccess.self, from: data){
                     dump(jsonResponse)
                     
-                    if let  _ = jsonResponse.errors, let message = jsonResponse.message{
-                         // Proceed to fetch user info
-                         // fetchUserInfo(token: token)
+                    // 检查是否有错误
+                    if let error = jsonResponse.error, let message = jsonResponse.message {
+                         // 有错误，显示错误消息
                          self.errorMessage = "\(message)"
-                    }else{
-                        if  let authData = jsonResponse.data?.authData {
+                    } else if jsonResponse.status == "success" {
+                        // 登录成功
+                        if let authData = jsonResponse.data?.authData {
                             
                             UserManager.shared.updateLoginStatus(true)
                             UserManager.shared.storeAutoData(data: authData)
@@ -645,14 +653,15 @@ struct Login: View {
                             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                                 self.isLoggedIn = true
                             }
-                            //去掉记录
-//                            Task{
-//                                await fetchUserInfo(token: authData)
-//                            }
-                        }else{
-                            if let message = jsonResponse.message {
-                                self.errorMessage = "\(message)"
-                            }
+                        } else {
+                            self.errorMessage = "登录失败: 未获取到授权信息"
+                        }
+                    } else {
+                        // 其他错误情况
+                        if let message = jsonResponse.message {
+                            self.errorMessage = "\(message)"
+                        } else {
+                            self.errorMessage = "登录失败: 未知错误"
                         }
                     }
                 }else{
