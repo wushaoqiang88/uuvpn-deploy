@@ -62,8 +62,10 @@ struct HomeView: View {
     // Current Server...
     @State var servers: [nodereponseData] = []
     
-     
-    @State var serverstixignfufeiTest: [nodereponseData] = [nodereponseData( type: "", name: "香港1🇭🇰高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "香港2🇭🇰高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "香港3🇭🇰高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "香港4🇭🇰高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "美国🇺🇸高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "日本🇯🇵高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "法国🇫🇷高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "韩国🇰🇷高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "新加坡🇸🇬高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "新加坡1🇸🇬高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "新加坡2🇸🇬高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "新加坡3🇸🇬高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "新加坡4🇸🇬高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "新加坡5🇸🇬高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: ""),nodereponseData( type: "", name: "新加坡6🇸🇬高速节点", rate: "", id2: 1, isOnline: 1, cacheKey: "")]
+    // 从后端获取的真实节点列表
+    @State var serverListFromBackend: [nodereponseData] = []
+    @State var isLoadingServers = false
+    @State var serverLoadError: String? = nil
     @State var currentServer: nodereponseData = nodereponseData( type: "", name: "", rate: "", id2:0, isOnline: 0 , cacheKey: "")
     @State var changeServer = false
         
@@ -375,21 +377,24 @@ struct HomeView: View {
         // using always dark mode...
         .preferredColorScheme(.dark)
         .onAppear {
-             
+
             print("onAppear ->  \(islogined)")
             //await environments.reload()
-            
+
             environments.postReload()
             Task {
-                
+
                 await doReload()
-                
+
                 await getConfigCache()
-                
+
+                // 从后端获取节点列表
+                await fetchServersFromBackend()
+
                // await doReloadSystemProxy()
             }
-            
-            
+
+
         }
         .fullScreenCover(isPresented: $isUserViewActive, content: {
             SideMenuView(isPresented: $isUserViewActive, isLoggedIn: $isLoggedIn)
@@ -2132,8 +2137,9 @@ struct HomeView: View {
                         }.padding() //.background(Color.gray.opacity(0.1))
                         
                     }.padding().padding(.bottom,getSafeArea().bottom)
-                    if (groups_firsttime.count == 0 && groups_firsttime.count == 0 ) {
-                        fufeiNodes()
+                    // 当没有真实节点数据时，显示空状态
+                    if (groups_firsttime.count == 0) {
+                        emptyNodesView()
                     }
                     //GroupListView().padding().padding(.bottom,getSafeArea().bottom)
                     
@@ -2158,68 +2164,132 @@ struct HomeView: View {
         }
     }
       
-    func fufeiNodes()->some View{
-        
-        
-        VStack(alignment: .leading, spacing: 18) {
-                        // Filtered servers...
-                        // Not showing selected One...
+    // 空节点视图 - 当没有可用节点时显示
+    func emptyNodesView() -> some View {
+        VStack(spacing: 20) {
+            Spacer().frame(height: 50)
             
-                    ForEach(serverstixignfufeiTest) { server in
-                        Button(action: {
-                            withAnimation {
-                                
-                               changeServer.toggle()
-                               //提醒付费
-                            
-                                if (paymentURLKey.count > 3){
-                                    isSubscriptionActive.toggle()
-                                }
-                                                   
-                           }
-                        }, label: {
-                            VStack(spacing: 4) {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        HStack {
-    //                            Image(server.name)
-    //                            .resizable()
-    //                            .aspectRatio(contentMode: .fit)
-    //                            .frame(width: 20, height: 20)
-
-                                            Text(server.name)
-                                                .font(.subheadline)
-                                                .fontWeight(.semibold).foregroundStyle(.white)
-                                        }
-
-                                        Label {
-                                            Text(server.isOnline == 1 ? "在线可用" : "不可用")
-
-                                        } icon: {
-                                            Image(systemName: server.isOnline == 1 ? "checkmark" : "xmark")
-                                        }
-                                        .foregroundColor(server.isOnline == 1 ?.green : .red)
-                                        .font(.caption2)
-                                    }
-
-                                    Spacer(minLength: 10)
-                                    
-                                    Image(systemName: "lock.fill").foregroundColor(.red)
-                                    
-                                    
-                                }
-                                .frame(height: 50)
-                                .padding(.horizontal)
-
-                                Divider()
-                            }
-                        })
-                        
-                        }
-                    }
-                    .padding(.top, 25)
-                    .padding(.bottom, getSafeArea().bottom)
+            Image(systemName: "server.rack")
+                .font(.system(size: 60))
+                .foregroundColor(.gray)
+            
+            Text("暂无可用节点")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+            
+            Text("请联系管理员添加节点或检查订阅状态")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+            
+            if isLoadingServers {
+                ProgressView()
+                    .padding(.top, 20)
+            }
+            
+            if let error = serverLoadError {
+                Text("加载失败: \(error)")
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .padding(.top, 10)
+            }
+            
+            Spacer()
+        }
+        .padding(.top, 25)
+        .padding(.bottom, getSafeArea().bottom)
+    }
+    
+    // 从后端获取节点列表
+    func fetchServersFromBackend() async {
+        isLoadingServers = true
+        serverLoadError = nil
         
+        guard let authData = UserManager.shared.getAutoData(), !authData.isEmpty else {
+            serverLoadError = "未登录"
+            isLoadingServers = false
+            return
+        }
+        
+        let urlString = "\(UserManager.shared.baseURL())user/server/fetch"
+        guard let url = URL(string: urlString) else {
+            serverLoadError = "无效的URL"
+            isLoadingServers = false
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(authData, forHTTPHeaderField: "Authorization")
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print("获取节点状态码: \(httpResponse.statusCode)")
+            }
+            
+            // 解析响应
+            struct ServerResponse: Codable {
+                let status: String?
+                let message: String?
+                let data: [ServerData]?
+            }
+            
+            struct ServerData: Codable {
+                let id: Int?
+                let name: String?
+                let type: String?
+                let host: String?
+                let port: Int?
+                let isOnline: Int?
+            }
+            
+            if let jsonResponse = try? JSONDecoder().decode(ServerResponse.self, from: data) {
+                if jsonResponse.status == "success", let servers = jsonResponse.data {
+                    // 转换为 nodereponseData
+                    let nodes = servers.map { server -> nodereponseData in
+                        nodereponseData(
+                            type: server.type ?? "",
+                            name: server.name ?? "未知节点",
+                            rate: "",
+                            id2: server.id ?? 0,
+                            isOnline: server.isOnline ?? 0,
+                            cacheKey: ""
+                        )
+                    }
+                    
+                    await MainActor.run {
+                        serverListFromBackend = nodes
+                        isLoadingServers = false
+                    }
+                    print("成功获取 \(nodes.count) 个节点")
+                } else {
+                    await MainActor.run {
+                        serverLoadError = jsonResponse.message ?? "获取节点失败"
+                        isLoadingServers = false
+                    }
+                }
+            } else {
+                // 尝试打印原始响应用于调试
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("节点响应: \(jsonString.prefix(500))")
+                }
+                await MainActor.run {
+                    serverLoadError = "解析响应失败"
+                    isLoadingServers = false
+                }
+            }
+        } catch {
+            print("获取节点错误: \(error)")
+            await MainActor.run {
+                serverLoadError = error.localizedDescription
+                isLoadingServers = false
+            }
+        }
     }
     
     private nonisolated func doURLTest() async {
