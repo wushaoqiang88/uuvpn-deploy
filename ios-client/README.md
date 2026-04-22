@@ -1,125 +1,351 @@
-# UUVPN iOS 客户端
+# UUVPN iOS SwiftUI Application
 
-## 项目说明
+**Language**: [English](README.md) | [中文](README_CN.md)
 
-基于 SwiftUI 开发的 iOS VPN 客户端，支持 sing-box 内核。
+A professional iOS VPN application built with SwiftUI, designed to integrate seamlessly with V2Board panel APIs. This application provides a modern, intuitive interface for VPN management with comprehensive configuration options.
 
-## 环境要求
+## 🚀 Features
 
-- Xcode 15.0+
-- iOS 15.0+
-- macOS 14.0+ (用于开发)
+- **Modern SwiftUI Interface**: Responsive design that adapts to different screen sizes
+- **Dark/Light Mode Support**: Automatic theme synchronization with system preferences
+- **V2Board API Integration**: Complete integration with V2Board panel APIs
+- **Network Management**: Advanced networking capabilities using `URLSession`
+- **Background Updates**: Automatic profile updates with background task scheduling
+- **Multi-platform Support**: iOS 15.0+ with macOS compatibility
 
-## 快速开始
+## 📋 Requirements
 
-### 1. 配置服务器地址
+Before getting started, ensure your development environment meets the following requirements:
 
-编辑 `XiaoXiong/DefaultUI/Network/UserManager.swift`：
+- **Xcode**: 14.0 or later
+- **iOS Deployment Target**: 15.0 or later
+- **Swift**: 5.7+
+- **Network Access**: VPN required for Swift Package Manager dependencies
+
+## 🏗️ Project Structure
+
+```
+iOS-SwiftUI-Code/
+├── ApplicationLibrary/          # Core application library
+│   ├── Service/                 # API services and managers
+│   │   ├── StoreManager.swift   # Configuration storage manager
+│   │   └── ProfileUpdateTask.swift # Background update tasks
+│   ├── Views/                   # SwiftUI view components
+│   │   ├── Dashboard/           # Dashboard interface
+│   │   ├── Profile/             # Profile management
+│   │   └── Setting/             # Settings interface
+│   └── Assets.xcassets/         # Application assets
+├── XiaoXiong/                   # Main application target
+│   ├── DefaultUI/               # Default UI components
+│   └── Info.plist               # Application configuration
+├── Extension/                   # Network extension
+├── SystemExtension/             # System extension for macOS
+├── uuvpn.xcodeproj             # Xcode project file
+└── README.md                   # Project documentation
+```
+
+## ⚙️ Installation & Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/nicolastinkl/UUVPN/tree/main/iOS-SwiftUI-Code
+cd iOS-SwiftUI-Code
+```
+
+### 2. Install Dependencies
+
+The project uses Swift Package Manager for dependency management. **Note: VPN connection required for package resolution.**
+
+```bash
+# Dependencies will be automatically resolved when opening the project
+```
+
+### 3. Open Project in Xcode
+
+```bash
+open uuvpn.xcodeproj
+```
+
+Select your target device or simulator and click the **Run** button.
+
+## 🔧 V2Board API Configuration
+
+### Base Configuration
+
+The application integrates with V2Board panels through a comprehensive API configuration system managed by [`StoreManager.swift`](ApplicationLibrary/Service/StoreManager.swift:17).
+
+![V2Board API Configuration](image.png)
+
+#### Configuration URL
+```swift
+public let configURL = "https://api.gooapis.com/api/vpnconfig.php"
+```
+
+### API Endpoints Configuration
+
+Configure the following API endpoints in your initialization response:
+
+```json
+{
+  "baseURL": "https://api.0008.uk/api/v1/",
+  "baseDYURL": "https://api.gooapis.com/api/vpnnodes.php",
+  "mainregisterURL": "https://lelian.app/#/register?code=",
+  "paymentURL": "xxxxx",
+  "telegramurl": "https://t.me/fastlink",
+  "kefuurl": "https://gooapis.com/fastlink/",
+  "websiteURL": "https://gooapis.com/fastlink/",
+  "crisptoken": "5546c6ea-4b1e-41bc-80e4-4b6648cbca76",
+  "banners": [
+    "https://image.gooapis.com/api/images/12-11-56.png",
+    "https://image.gooapis.com/api/images/12-44-57.png",
+    "https://image.gooapis.com/api/images/12-47-03.png"
+  ],
+  "message": "OK",
+  "code": 1
+}
+```
+
+### API Field Descriptions
+
+| Field | Description | Usage |
+|-------|-------------|-------|
+| `baseURL` | Primary API endpoint for V2Board panel | All main API requests |
+| `baseDYURL` | Default VPN node testing endpoint | Node connectivity testing |
+| `mainregisterURL` | User registration page with referral code | User onboarding |
+| `paymentURL` | Payment gateway URL | **Critical for App Store compliance** |
+| `telegramurl` | Telegram support channel | Customer support |
+| `kefuurl` | Customer service page | Online support |
+| `websiteURL` | Official website URL | General information |
+| `crisptoken` | Crisp chat authentication token | Live chat integration |
+| `banners` | Promotional banner image URLs | Marketing content |
+| `message` | Response status message | API response validation |
+| `code` | Response status code | Success/error handling |
+
+### API Request Headers
+
+All API requests include the following headers for authentication and tracking:
 
 ```swift
-// 修改为你的后端服务器地址
-public let configURL = "http://YOUR_SERVER_IP:7001/api/v1/"
+request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+request.addValue(Bundle.main.bundleIdentifier ?? "", forHTTPHeaderField: "bid")
+request.addValue(UserManager.shared.appversion, forHTTPHeaderField: "appver")
 ```
 
-### 2. 配置签名
+## 🆔 Bundle Identifier (BID) Configuration
 
-在 Xcode 中：
-1. 选择项目文件
-2. 选择 Target (SFI)
-3. 切换到 Signing & Capabilities
-4. 选择你的 Team
-5. 修改 Bundle Identifier (例如: com.yourname.uuvpn)
+### Understanding Bundle Identifier
 
-### 3. 运行
+The Bundle Identifier (BID) is crucial for app identification and API authentication. It's referenced throughout the codebase as `Bundle.main.bundleIdentifier`.
 
-- 模拟器: 选择 iOS Simulator → 点击 Run
-- 真机: 连接 iPhone → 选择设备 → 点击 Run
+### Current BID Configuration
 
-## 项目结构
-
+Based on the [`Info.plist`](XiaoXiong/Info.plist:7) analysis, the current BID pattern is:
 ```
-ios-client/
-├── XiaoXiong/              # 主应用代码
-│   ├── DefaultUI/          # UI 界面
-│   │   ├── View/           # 视图
-│   │   ├── Network/        # 网络请求
-│   │   └── Model/          # 数据模型
-│   └── Application.swift   # 应用入口
-├── Extension/              # VPN 扩展
-├── ApplicationLibrary/     # 共享库
-└── Library/                # 核心库
+com.uuvpn.appleaman
 ```
 
-## 主要功能
+### Modifying Bundle Identifier
 
-- [x] 用户登录/注册
-- [x] 节点订阅
-- [x] VPN 连接
-- [x] 节点测速
-- [x] 分流规则
-- [x] 客服系统 (Crisp)
+To change the Bundle Identifier for your deployment:
 
-## 打包发布
+![Bundle Identifier Configuration](image-2.png)
 
-### 测试版 (Ad Hoc)
+#### 1. Update Xcode Project Settings
+1. Open `uuvpn.xcodeproj` in Xcode
+2. Select the project root in the navigator
+3. Choose your target (e.g., "SFI", "SFM", "SFT")
+4. Navigate to **General** → **Identity**
+5. Update the **Bundle Identifier** field
 
-1. Product → Archive
-2. Distribute App → Ad Hoc
-3. 选择证书和描述文件
-4. 导出 ipa 文件
+#### 2. Update Info.plist References
+Search and replace all BID references in configuration files:
 
-### App Store
+```bash
+# Search for current BID references
+grep -r "com.uuvpn.appleaman" .
 
-1. Product → Archive
-2. Distribute App → App Store Connect
-3. 上传后等待审核
+# Update the following files:
+# - XiaoXiong/Info.plist
+# - Extension/Info.plist  
+# - SystemExtension/Info.plist
+# - IntentsExtension/Info.plist
+```
 
-## 注意事项
+#### 3. Update Code References
+The BID is automatically retrieved via `Bundle.main.bundleIdentifier` in:
+- [`Login.swift`](XiaoXiong/DefaultUI/View/LoginView/Login.swift:494)
+- [`HomeView.swift`](XiaoXiong/DefaultUI/View/HomeView.swift:984)
 
-### 真机测试
+No code changes required as it uses the system bundle identifier.
 
-- 确保手机和服务器在同一局域网，或服务器部署在公网
-- 首次安装需要在设置中信任开发者证书
+### BID Validation in API
 
-### Network Extension
+The server can validate requests using the BID header to ensure API calls come from authorized applications.
 
-VPN 功能需要：
-- 有效的开发者账号
-- Network Extension 权限
-- App Groups 配置
+## 💳 Payment URL Logic & App Store Compliance
 
-## 常见问题
+### Payment URL Length Detection
 
-### 编译错误 "IPC failed"
+The application implements intelligent payment handling based on the `paymentURL` field length:
 
-这是模拟器限制，真机不会出现。已在代码中添加模拟器检测跳过 VPN 安装。
+```swift
+// Apple Review Mode Detection
+if (paymentURLKey.count > 3) {
+    // Normal payment mode - show external payment options
+    // Enable subscription features
+    // Show payment buttons and pricing
+} else {
+    // Apple Review Mode - hide external payments
+    // Comply with App Store guidelines
+    // Hide sensitive payment information
+}
+```
 
-### 登录失败
+### Implementation Details
 
-1. 检查服务器地址是否正确
-2. 确保手机能访问服务器
-3. 检查后端服务是否正常运行
+#### Normal Mode (paymentURL.length > 3)
+- **External Payment**: Direct users to web-based payment systems
+- **Full Feature Access**: All subscription features available
+- **Payment Integration**: Complete payment flow with external providers
 
-### 无法连接 VPN
+#### Apple Review Mode (paymentURL.length ≤ 3)
+- **Compliance Mode**: Hides external payment options
+- **Limited Features**: Restricted functionality during review
+- **App Store Guidelines**: Complies with Apple's payment policies
 
-1. 确保已安装 VPN 配置
-2. 检查 Network Extension 权限
-3. 查看系统设置中的 VPN 配置
+### Code Implementation
 
-## 自定义配置
+The logic is implemented across multiple view files:
 
-### 修改主题颜色
+- [`HomeView.swift`](XiaoXiong/DefaultUI/View/HomeView.swift:125): Main payment UI logic
+- [`SideMenuView.swift`](XiaoXiong/DefaultUI/View/SideMenuView.swift:119): Menu payment options
+- [`ActiveDashboardViewNewUI.swift`](XiaoXiong/DefaultUI/View/ActiveDashboardViewNewUI.swift:217): Dashboard payment handling
 
-编辑 `Assets.xcassets` 中的颜色资源。
+### Server-Side Configuration
 
-### 修改服务器地址
+Configure your initialization endpoint to return:
 
-编辑 `UserManager.swift` 中的 `configURL`。
+```json
+{
+  "paymentURL": "https://your-payment-gateway.com/pay",  // Normal mode
+  // OR
+  "paymentURL": "xx",  // Apple review mode
+}
+```
 
-### 修改客服 ID
+## 🔄 Initialization Endpoint Configuration
 
-编辑后端返回的配置中的 `crisptoken`。
+### Endpoint Setup
 
-## 许可证
+The application fetches configuration from a remote endpoint on startup. This allows dynamic configuration without app updates.
 
-请参考项目根目录的 LICENSE 文件。
+![Initialization Configuration](image-1.png)
+
+#### Recommended Hosting
+- **Alibaba Cloud OSS**: Faster response times in China
+- **CDN Integration**: Global content delivery
+- **HTTPS Required**: Secure configuration delivery
+
+### Configuration Response Format
+
+```json
+{
+  "baseURL": "https://your-v2board-panel.com/api/v1/",
+  "baseDYURL": "https://your-node-test-endpoint.com/api/vpnnodes.php",
+  "mainregisterURL": "https://your-panel.com/#/register?code=",
+  "paymentURL": "https://your-payment-gateway.com/",
+  "telegramurl": "https://t.me/your-support-channel",
+  "kefuurl": "https://your-support-site.com/",
+  "websiteURL": "https://your-website.com/",
+  "crisptoken": "your-crisp-chat-token",
+  "banners": [
+    "https://your-cdn.com/banner1.png",
+    "https://your-cdn.com/banner2.png"
+  ],
+  "message": "OK",
+  "code": 1
+}
+```
+
+### Error Handling
+
+```json
+{
+  "message": "Configuration Error",
+  "code": 0,
+  "error": "Invalid request"
+}
+```
+
+### Caching Strategy
+
+The [`StoreManager`](ApplicationLibrary/Service/StoreManager.swift) implements local caching:
+
+```swift
+// Configuration is cached locally using UserDefaults
+func storebaseURLData(data: String) {
+    defaults.set(data, forKey: "baseURLKey")
+    defaults.synchronize()
+}
+```
+
+## 🔐 Security Considerations
+
+### API Security
+- **HTTPS Only**: All API endpoints must use HTTPS
+- **Token Validation**: Implement proper token validation
+- **Rate Limiting**: Protect against API abuse
+
+### Bundle Identifier Security
+- **Unique BID**: Use a unique bundle identifier for your deployment
+- **Server Validation**: Validate BID on server-side for API requests
+- **Certificate Pinning**: Consider implementing certificate pinning
+
+## 🚀 Deployment Guide
+
+### Pre-Deployment Checklist
+
+1. **Update Bundle Identifier**: Change from default BID
+2. **Configure API Endpoints**: Set up your V2Board panel URLs
+3. **Test Payment Logic**: Verify both normal and review modes
+4. **Update App Icons**: Replace default icons with your branding
+5. **Configure Push Notifications**: Set up notification certificates
+
+### Build Configuration
+
+```bash
+# Clean build folder
+rm -rf ~/Library/Developer/Xcode/DerivedData
+
+# Archive for distribution
+xcodebuild archive \
+  -project uuvpn.xcodeproj \
+  -scheme YourSchemeName \
+  -archivePath YourApp.xcarchive
+```
+
+## 🤝 Contributing
+
+We welcome contributions to improve the application. Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+## 📞 Support
+
+For technical support and questions:
+
+- **GitHub Issues**: [Create an issue](https://github.com/nicolastinkl/UUVPN/issues)
+- **Documentation**: Refer to the deployment documentation in the project
+- **Community**: Join our developer community for assistance
+
+---
+
+**Note**: This application requires proper V2Board panel setup and valid API endpoints to function correctly. Ensure your backend infrastructure is properly configured before deployment.

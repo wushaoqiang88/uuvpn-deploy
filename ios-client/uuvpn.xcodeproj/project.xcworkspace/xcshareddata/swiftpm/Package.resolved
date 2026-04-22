@@ -1,0 +1,51 @@
+{
+  "originHash" : "09cbc6a912afee5da3f17205f76e5ed7a16e3d1baceee709051bc8a77d5be078",
+  "pins" : [
+    {
+      "identity" : "binarycodable",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/christophhagen/BinaryCodable",
+      "state" : {
+        "branch" : "master",
+        "revision" : "b16499ffce709ae755c84ea9c8338910a0c4ffb3"
+      }
+    },
+    {
+      "identity" : "lottie-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/airbnb/lottie-ios",
+      "state" : {
+        "revision" : "fe4c6fe3a0aa66cdeb51d549623c82ca9704b9a5",
+        "version" : "4.5.0"
+      }
+    },
+    {
+      "identity" : "qrcode",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dagronf/qrcode.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "49fec812bd70eb9417c9bbdfac8f2a4e0d7b9a06"
+      }
+    },
+    {
+      "identity" : "swift-qrcode-generator",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dagronf/swift-qrcode-generator",
+      "state" : {
+        "revision" : "2b1980b825f08a81ccc762b0c4d17fcde9d5e953",
+        "version" : "2.0.2"
+      }
+    },
+    {
+      "identity" : "swiftimagereadwrite",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dagronf/SwiftImageReadWrite",
+      "state" : {
+        "revision" : "39c1bbd7400fbc0920b998080b3023e6a3621ced",
+        "version" : "1.9.1"
+      }
+    }
+  ],
+  "version" : 3
+}
