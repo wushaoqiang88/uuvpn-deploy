@@ -56,3 +56,23 @@ error: failed to push some refs to 'https://github.com/wushaoqiang88/uuvpn-deplo
 [2026-04-23 18:15:16] 📝 检测到文件变化，开始同步...
 [2026-04-23 18:15:16] 📝 检测到文件变化，开始同步...
 [2026-04-23 18:15:16] post-commit: 检测到新提交，开始推送...
+[2026-04-23 18:15:16] post-commit: 检测到新提交，开始推送...
+To https://github.com/wushaoqiang88/uuvpn-deploy.git
+   15858a0..e3cf2c2  main -> main
+[2026-04-23 18:15:18] ✅ 推送成功: main
+[2026-04-23 18:15:18] ✅ 提交成功: auto-sync: 2026-04-23 18:15:16
+To https://github.com/wushaoqiang88/uuvpn-deploy.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at e3cf2c21e446312089a41dd2bfb396b0d85f6c04 but expected 15858a06e1e88c11348a8f631e3587fb3dfeac11)
+error: failed to push some refs to 'https://github.com/wushaoqiang88/uuvpn-deploy.git'
+[2026-04-23 18:15:18] ❌ 推送失败: main
+[2026-04-23 18:15:18] ✅ 提交成功: auto-sync: 2026-04-23 18:15:16
+[2026-04-23 18:15:21] 📝 检测到文件变化，开始同步...
+[2026-04-23 18:15:21] 📝 检测到文件变化，开始同步...
+fatal: Unable to create '/Users/wushaoqiang/Desktop/vpn/uuvpn-deploy/.git/index.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
+[2026-04-23 18:15:21] ⚠️ 提交失败或无变更
