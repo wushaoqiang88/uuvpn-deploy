@@ -67,3 +67,4 @@ case "$1" in
         echo "  logs     - 查看最近日志"
         exit 1
         ;;
+esac
