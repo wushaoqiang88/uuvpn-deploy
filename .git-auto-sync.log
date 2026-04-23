@@ -76,3 +76,11 @@ are terminated then try again. If it still fails, a git process
 may have crashed in this repository earlier:
 remove the file manually to continue.
 [2026-04-23 18:15:21] ⚠️ 提交失败或无变更
+[2026-04-23 18:15:21] post-commit: 检测到新提交，开始推送...
+To https://github.com/wushaoqiang88/uuvpn-deploy.git
+   e3cf2c2..514a65c  main -> main
+[2026-04-23 18:15:23] ✅ 推送成功: main
+[2026-04-23 18:15:23] ✅ 提交成功: auto-sync: 2026-04-23 18:15:21
+[2026-04-23 18:26:12] 📝 检测到文件变化，开始同步...
+[2026-04-23 18:26:12] 📝 检测到文件变化，开始同步...
+[2026-04-23 18:26:12] ⚠️ 提交失败或无变更
