@@ -1,0 +1,9 @@
+[2026-04-23 18:13:18] 🚀 自动同步服务已启动 (PID: 6181)
+[2026-04-23 18:13:18] 📁 监控目录: /Users/wushaoqiang/Desktop/vpn/uuvpn-deploy
+[2026-04-23 18:13:18] 🌐 远程仓库: https://github.com/wushaoqiang88/uuvpn-deploy.git
+[2026-04-23 18:13:18] 👁️ 使用 fswatch 监控文件变化...
+[2026-04-23 18:14:24] 🚀 自动同步服务已启动 (PID: 6665)
+[2026-04-23 18:14:24] 📁 监控目录: /Users/wushaoqiang/Desktop/vpn/uuvpn-deploy
+[2026-04-23 18:14:24] 🌐 远程仓库: https://github.com/wushaoqiang88/uuvpn-deploy.git
+[2026-04-23 18:14:24] 👁️ 使用 fswatch 监控文件变化...
+[2026-04-23 18:14:37] 📝 检测到文件变化，开始同步...
